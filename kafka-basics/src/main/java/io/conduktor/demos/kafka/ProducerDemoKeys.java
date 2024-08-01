@@ -35,7 +35,7 @@ public class ProducerDemoKeys {
         for (int j = 0; j < 2; j++) {
             for (int i = 0; i < 20; i++) {
 
-                String topic = "demo_java";
+                String topic = "demo-java-world";
                 String key = "id_" + i;
                 String value = "hello world " + i;
                 //        create the producer record
@@ -56,15 +56,21 @@ public class ProducerDemoKeys {
                     }
                 });
             }
-
-//        tell the producer to send all data and block until done -- synchronous
-            producer.flush();
-
-//        flush and close the producer
-//        so when you call producer.close() it will automatically call producer.flush() so you don't need to mention it explicitly.
-            producer.close();
-
+            try{
+                Thread.sleep(500);
+            }catch (InterruptedException e){
+                logger.info("In catch block");
+                e.printStackTrace();
+            }
         }
+
+//     tell the producer to send all data and block until done -- synchronous
+        producer.flush();
+
+//    flush and close the producer
+//    so when you call producer.close() it will automatically call producer.flush() so you don't need to mention it explicitly.
+        producer.close();
+
     }
 
 }
