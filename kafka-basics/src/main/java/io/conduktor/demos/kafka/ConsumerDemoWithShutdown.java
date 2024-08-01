@@ -12,6 +12,7 @@ import java.time.Duration;
 import java.util.List;
 import java.util.Properties;
 
+//adding this shutdown hook so that we can properly shutdown the consumer as we previously did for producer.
 public class ConsumerDemoWithShutdown {
 
     private static final Logger logger = LoggerFactory.getLogger(ProducerDemo.class.getSimpleName());
@@ -47,9 +48,17 @@ public class ConsumerDemoWithShutdown {
         final Thread thread = Thread.currentThread();
 
 //        adding the shutdown hook
+//        The shutdown hook is a special thread that will run when the JVM is shutting down.
+//        Shutdown Hook:
+//        Inside the hook:
+//              consumer.wakeup() is called to interrupt any ongoing poll operation and exit the loop gracefully.
+//              thread.join() is called to wait for the main thread to finish its execution,
+//              ensuring that all the necessary clean-up operations in the main thread are completed before the JVM exits.
         Runtime.getRuntime().addShutdownHook(new Thread(){
             public void run(){
                 logger.info("Detected a shutdown, let's exit by calling consumer.wakeup()......");
+//             when we do a consumer.wakeup() next time when we will do consumer.poll() in our code
+//             this is going to throw a wakeup exception.
                 consumer.wakeup();
 
 //                join the main thread to allow the execution of the code in the main thread
@@ -80,11 +89,13 @@ public class ConsumerDemoWithShutdown {
         }catch (Exception e){
             logger.info("Unxpected Exception");
         }finally {
-            consumer.close(); // close the consumer, this will also commit offsets
+            consumer.close();   // close the consumer and this will also commit offsets
             logger.info("The consumer is now gracefully shutdown");
         }
-
-
     }
-
 }
+
+//    Key Points
+//    Graceful Shutdown: The shutdown hook ensures the consumer can shut down gracefully by using consumer.wakeup() and joining the main thread.
+//        Polling Loop: The consumer continuously polls for messages and processes them until an interruption occurs.
+//        Resource Management: The finally block ensures that the consumer is properly closed, even if an exception occurs.

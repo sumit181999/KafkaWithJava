@@ -6,7 +6,6 @@ import org.apache.kafka.common.serialization.StringSerializer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.awt.datatransfer.StringSelection;
 import java.util.Properties;
 
 public class ProducerDemo {
